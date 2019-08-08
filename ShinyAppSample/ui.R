@@ -1,33 +1,70 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
+##############################################################################################################################
+#### 建物エネルギーデータ分析ツール ui.R #####################################################################################
+##############################################################################################################################
 
+# パッケージ一覧 -----------------------------------------------------------------
 library(shiny)
+library(shinydashboard)
 
-# Define UI for application that draws a histogram
-shinyUI(fluidPage(
+# Webページ構成要素 --------------------------------------------------------------
+# header #
+header <- dashboardHeader(title = "建物エネルギーデータ分析ツール", titleWidth = 500)
+
+# sidebar #
+sidebar <- dashboardSidebar(
+  # サイドバーメニュー
+  sidebarMenu(
+    menuItem("データセット[kWh]", tabName = "table"),
+    menuItem("トレンドグラフ", tabName = "trend", badgeColor = "red"),
+    menuItem("クラスタリング", tabName = "clustering")
+  ),
   
-  # Application title
-  titlePanel("Old Faithful Geyser Data"),
+  # ファイルのアップロードUI
+  fileInput("file", "csvファイルをアップロードしてください",
+            accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
   
-  # Sidebar with a slider input for number of bins 
-  sidebarLayout(
-    sidebarPanel(
-       sliderInput("bins",
-                   "Number of bins:",
-                   min = 1,
-                   max = 50,
-                   value = 30)
-    ),
+  # カレンダーの出力
+  uiOutput("DateRange"),
+  
+  # トレンドグラフに描画する項目選択
+  uiOutput("selectDeps"),
+  
+  sliderInput(inputId = "RangeY", label = "Y軸（電力消費[kW]）の範囲をを指定してください",
+              min = 0, max = 4000, value = c(0, 4000), step = 50),
+  
+  # クラスタリングの対象とする項目の選択
+  uiOutput("target_cluster")
+  
+)
+
+# body #
+body <- dashboardBody(
+  
+  tabItems(
+    tabItem(
+      h1("ようこそ『建物エネルギーデータ分析ツール』へ"),
+      tabName = "table",
+      DT::dataTableOutput("DataTable")),
     
-    # Show a plot of the generated distribution
-    mainPanel(
-       plotOutput("distPlot")
-    )
+    tabItem(tabName = "trend",
+            
+            # トレンドグラフの描画
+            plotOutput("trendGragh")
+            ),
+    
+    tabItem(tabName = "clustering",
+            
+            # アイコン
+            infoBoxOutput(width = 3, "Max"),
+            infoBoxOutput(width = 3, "Min"),
+            infoBoxOutput(width = 3, "Mean"),
+            # クラスタセンターの描画
+            plotOutput("qqq")
+            )
+    
   )
-))
+)
+
+
+# 構成要素の組み立て ---------------------------------------------------------------
+dashboardPage(header, sidebar, body)
