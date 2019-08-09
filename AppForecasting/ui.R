@@ -8,19 +8,19 @@ library(shinydashboard)
 
 # Webページ構成要素 --------------------------------------------------------------
 # header #
-header <- dashboardHeader(title = "建物エネルギーデータ分析ツール", titleWidth = 500)
+header <- dashboardHeader(title = "Building Electricity Analysys Tool", titleWidth = 500)
 
 # sidebar #
 sidebar <- dashboardSidebar(
   # サイドバーメニュー
   sidebarMenu(
-    menuItem("データセット[kWh]", tabName = "table"),
-    menuItem("トレンドグラフ", tabName = "trend", badgeColor = "red"),
-    menuItem("クラスタリング", tabName = "clustering")
+    menuItem("Dataset [kWh]", tabName = "table"),
+    menuItem("Trend grapg", tabName = "trend", badgeColor = "red"),
+    menuItem("clustering", tabName = "clustering")
   ),
   
   # ファイルのアップロードUI
-  fileInput("file", "csvファイルをアップロードしてください",
+  fileInput("file", "upload the csv file",
             accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
   
   # カレンダーの出力
@@ -29,7 +29,7 @@ sidebar <- dashboardSidebar(
   # トレンドグラフに描画する項目選択
   uiOutput("selectDeps"),
   
-  sliderInput(inputId = "RangeY", label = "Y軸（電力消費[kW]）の範囲をを指定してください",
+  sliderInput(inputId = "RangeY", label = "Y axis（electricity load[kW]）select the range",
               min = 0, max = 4000, value = c(0, 4000), step = 50),
   
   # クラスタリングの対象とする項目の選択
@@ -42,7 +42,7 @@ body <- dashboardBody(
   
   tabItems(
     tabItem(
-      h1("ようこそ『建物エネルギーデータ分析ツール』へ"),
+      h1("welcome to 『Building energy analysis tool』"),
       tabName = "table",
       DT::dataTableOutput("DataTable")),
     
